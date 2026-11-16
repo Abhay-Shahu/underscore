@@ -9,7 +9,9 @@ import { Resend } from "resend";
 import { WithdrawalRequestEmail } from "@/emails/WithdrawalRequestEmail";
 import { render } from "@react-email/render";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = process.env.RESEND_API_KEY
+  ? new Resend(process.env.RESEND_API_KEY)
+  : null;
 const ADMIN_EMAIL = "piyushagarwalvo@gmail.com";
 
 const withdrawalLimiter = createRateLimiter({
@@ -183,12 +185,14 @@ export const requestWithdrawal = async ({
           reviewUrl,
         })
       );
-      await resend.emails.send({
-        from: "Prept <onboarding@resend.dev>",
-        to: ADMIN_EMAIL,
-        subject: `Withdrawal Request — ${dbUser.name} · ${credits} credits`,
-        html,
-      });
+      if (resend) {
+        await resend.emails.send({
+          from: "Underscore <onboarding@resend.dev>",
+          to: ADMIN_EMAIL,
+          subject: `Withdrawal Request — ${dbUser.name} · ${credits} credits`,
+          html,
+        });
+      }
     } catch (emailErr) {
       console.error("Withdrawal email failed:", emailErr);
     }

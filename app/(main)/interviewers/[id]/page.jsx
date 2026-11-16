@@ -1,6 +1,7 @@
 import { currentUser } from "@clerk/nextjs/server";
 import { redirect, notFound } from "next/navigation";
 import { db } from "@/lib/prisma";
+import { checkUser } from "@/lib/checkUser";
 import { getInterviewerProfile } from "@/actions/booking";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -16,15 +17,26 @@ export default async function InterviewerProfilePage({ params }) {
   const { id } = await params;
 
   const user = await currentUser();
-  if (!user) redirect("/");
+  if (!user) {
+    redirect(`/sign-in?redirect_url=/interviewers/${id}`);
+  }
 
-  const dbUser = await db.user.findUnique({
+  let dbUser = await db.user.findUnique({
     where: { clerkUserId: user.id },
     select: { role: true, credits: true },
   });
 
-  if (!dbUser) redirect("/");
-  if (dbUser.role === "UNASSIGNED") redirect("/onboarding");
+  if (!dbUser) {
+    await checkUser();
+    dbUser = await db.user.findUnique({
+      where: { clerkUserId: user.id },
+      select: { role: true, credits: true },
+    });
+  }
+
+  if (dbUser?.role === "UNASSIGNED") {
+    redirect("/onboarding");
+  }
 
   const interviewer = await getInterviewerProfile(id);
 
@@ -135,7 +147,7 @@ export default async function InterviewerProfilePage({ params }) {
             <div>
               <SectionLabel>What to expect</SectionLabel>
               <p className="text-sm text-stone-500 font-light mt-1">
-                Every session on Prept includes the following.
+                Every session on Underscore includes the following.
               </p>
             </div>
             <ul className="flex flex-col gap-5">
@@ -163,7 +175,7 @@ export default async function InterviewerProfilePage({ params }) {
           <SlotPicker
             interviewer={interviewer}
             interviewerCredits={interviewer.creditRate ?? 10}
-            userCredits={dbUser.credits}
+            userCredits={dbUser?.credits ?? 0}
           />
         </div>
       </div>

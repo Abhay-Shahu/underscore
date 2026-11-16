@@ -20,15 +20,15 @@ const dmSans = DM_Sans({
 });
 
 export const metadata = {
-  title: "Prept",
-  description: "",
+  title: "Underscore — AI Mock Interview Marketplace",
+  description: "Master your technical interviews with senior engineers and instant AI feedback.",
 };
 
 export default function RootLayout({ children }) {
   return (
     <ClerkProvider
       appearance={{
-        theme: dark,
+        baseTheme: dark,
       }}
     >
       <html lang="en" suppressHydrationWarning>
@@ -44,12 +44,17 @@ export default function RootLayout({ children }) {
             <main className="min-h-screen">{children}</main>
             <Toaster richColors />
 
-            <footer className="relative z-10 border-t border-white/7 py-12  mx-auto px-6 flex flex-wrap items-center justify-center text-stone-400">
-              Made with ❤️ by RoadsideCoder
+            <footer className="relative z-10 border-t border-white/7 py-8 mx-auto px-6 flex flex-wrap items-center justify-between max-w-6xl text-xs text-stone-500">
+              <div className="flex items-center gap-2">
+                <span className="font-serif text-amber-400 font-bold text-sm leading-none border border-amber-400/30 rounded px-1.5 py-0.5 bg-amber-400/10">U_</span>
+                <span className="text-stone-300 font-medium">Underscore</span>
+                <span>© {new Date().getFullYear()}</span>
+              </div>
+              <p>AI-Powered Mock Interview Marketplace</p>
             </footer>
           </ThemeProvider>
         </body>
       </html>
     </ClerkProvider>
-  );
+  )
 }
