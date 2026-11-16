@@ -1,23 +1,9 @@
 import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 import Header from "@/components/header";
-import { DM_Sans, Lora } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 import { Toaster } from "sonner";
-
-const lora = Lora({
-  subsets: ["latin"],
-  weight: ["400", "500"],
-  style: ["normal", "italic"],
-  variable: "--font-serif",
-});
-
-const dmSans = DM_Sans({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
-  variable: "--font-sans",
-});
 
 export const metadata = {
   title: "Underscore — AI Mock Interview Marketplace",
@@ -32,8 +18,15 @@ export default function RootLayout({ children }) {
       }}
     >
       <html lang="en" suppressHydrationWarning>
-        <head />
-        <body className={`${lora.variable} ${dmSans.variable} font-sans`}>
+        <head>
+          <link rel="preconnect" href="https://fonts.googleapis.com" />
+          <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+          <link
+            href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300..600;1,9..40,300..600&family=Lora:ital,wght@0,400..500;1,400..500&display=swap"
+            rel="stylesheet"
+          />
+        </head>
+        <body className="font-sans">
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
