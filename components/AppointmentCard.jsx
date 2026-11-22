@@ -156,7 +156,7 @@ export function AppointmentCard({ booking, mode, isPast = false }) {
           </div>
         )}
 
-        {(streamCallId || recordingUrl || feedback) && (
+        {(streamCallId || recordingUrl || feedback || isPast) && (
           <div className="flex items-center gap-2 flex-wrap pt-1">
             {!isPast && streamCallId && isUpcoming && (
               <Button variant="gold" size="sm" className="gap-2" asChild>
@@ -167,17 +167,28 @@ export function AppointmentCard({ booking, mode, isPast = false }) {
               </Button>
             )}
 
-            {recordingUrl && (
-              <Button variant="outline" size="sm" className="gap-2" asChild>
+            {recordingUrl ? (
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-2 border-amber-400/30 text-amber-300 hover:bg-amber-400/10 hover:border-amber-400/50"
+                asChild
+              >
                 <a
                   href={recordingUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  📹 Recording
+                  <Video size={13} className="text-amber-400" />
+                  Watch Recording
                 </a>
               </Button>
-            )}
+            ) : isPast ? (
+              <span className="text-xs text-stone-500 flex items-center gap-1.5 py-1 px-2.5 rounded-lg border border-white/5 bg-white/2">
+                <Video size={12} className="text-stone-600" />
+                No recording available
+              </span>
+            ) : null}
 
             {feedback && (
               <>

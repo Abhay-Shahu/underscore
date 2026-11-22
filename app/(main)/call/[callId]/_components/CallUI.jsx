@@ -10,6 +10,7 @@ import {
   useCall,
   CallingState,
   CallControls,
+  useToggleCallRecording,
 } from "@stream-io/video-react-sdk";
 import "@stream-io/video-react-sdk/dist/css/styles.css";
 
@@ -25,7 +26,8 @@ import {
 import "stream-chat-react/dist/css/v2/index.css";
 
 import { Badge } from "@/components/ui/badge";
-import { MessageSquare, Sparkles, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { MessageSquare, Sparkles, Loader2, Video } from "lucide-react";
 import AIQuestionsPanel from "./AIQuestions";
 
 // ─── Call UI (inside StreamCall context) ─────────────────────────────────────
@@ -42,6 +44,8 @@ export default function CallUI({
   const { useCallCallingState } = useCallStateHooks();
   const call = useCall();
   const callingState = useCallCallingState();
+  const { toggleCallRecording, isAwaitingResponse, isCallRecordingInProgress } =
+    useToggleCallRecording();
 
   const [activeTab, setActiveTab] = useState("chat");
 
@@ -123,6 +127,42 @@ export default function CallUI({
               Interviewer
             </Badge>
           )}
+        </div>
+
+        {/* Recording control button */}
+        <div className="flex items-center gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            disabled={isAwaitingResponse}
+            onClick={toggleCallRecording}
+            className={`text-xs gap-1.5 transition-all ${
+              isCallRecordingInProgress
+                ? "border-red-500/40 bg-red-500/10 text-red-400 hover:bg-red-500/20"
+                : "border-white/10 text-stone-400 hover:text-white hover:border-white/20"
+            }`}
+          >
+            {isAwaitingResponse ? (
+              <>
+                <Loader2 size={12} className="animate-spin" />
+                <span>Processing...</span>
+              </>
+            ) : isCallRecordingInProgress ? (
+              <>
+                <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                <span>Recording</span>
+                <span className="text-[10px] text-red-400/70 font-normal">
+                  (Stop)
+                </span>
+              </>
+            ) : (
+              <>
+                <Video size={12} className="text-stone-400" />
+                <span>Record</span>
+              </>
+            )}
+          </Button>
         </div>
       </div>
 

@@ -61,8 +61,10 @@ export default function AIQuestionsPanel({ categories }) {
         )}
       </Button>
 
-      {error && (
-        <p className="text-xs text-red-400">{error?.message || error}</p>
+      {(error || data?.error) && (
+        <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-xs text-red-400">
+          {data?.error || error?.message || String(error)}
+        </div>
       )}
 
       {/* Questions list */}
