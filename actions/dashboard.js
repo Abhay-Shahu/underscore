@@ -12,7 +12,7 @@ import { render } from "@react-email/render";
 const resend = process.env.RESEND_API_KEY
   ? new Resend(process.env.RESEND_API_KEY)
   : null;
-const ADMIN_EMAIL = "piyushagarwalvo@gmail.com";
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "pg588976@gmail.com";
 
 const withdrawalLimiter = createRateLimiter({
   refillRate: 1,
@@ -64,10 +64,10 @@ export const setAvailability = async ({ startTime, endTime }) => {
 
 export const getAvailability = async () => {
   const user = await currentUser();
-  if (!user) throw new Error("Unauthorized");
+  if (!user) return null;
 
   const dbUser = await db.user.findUnique({ where: { clerkUserId: user.id } });
-  if (!dbUser) throw new Error("User not found");
+  if (!dbUser) return null;
 
   return db.availability.findFirst({
     where: { interviewerId: dbUser.id, status: "AVAILABLE" },
@@ -78,10 +78,10 @@ export const getAvailability = async () => {
 
 export const getInterviewerAppointments = async () => {
   const user = await currentUser();
-  if (!user) throw new Error("Unauthorized");
+  if (!user) return [];
 
   const dbUser = await db.user.findUnique({ where: { clerkUserId: user.id } });
-  if (!dbUser) throw new Error("User not found");
+  if (!dbUser) return [];
 
   return db.booking.findMany({
     where: { interviewerId: dbUser.id },
@@ -97,7 +97,13 @@ export const getInterviewerAppointments = async () => {
 
 export const getInterviewerStats = async () => {
   const user = await currentUser();
-  if (!user) throw new Error("Unauthorized");
+  if (!user)
+    return {
+      creditBalance: 0,
+      creditRate: 10,
+      totalEarned: 0,
+      completedSessions: 0,
+    };
 
   const dbUser = await db.user.findUnique({
     where: { clerkUserId: user.id },
@@ -110,7 +116,13 @@ export const getInterviewerStats = async () => {
       },
     },
   });
-  if (!dbUser) throw new Error("User not found");
+  if (!dbUser)
+    return {
+      creditBalance: 0,
+      creditRate: 10,
+      totalEarned: 0,
+      completedSessions: 0,
+    };
 
   const totalEarned = dbUser.bookingsAsInterviewer.reduce(
     (sum, b) => sum + b.creditsCharged,
@@ -207,10 +219,10 @@ export const requestWithdrawal = async ({
 
 export const getWithdrawalHistory = async () => {
   const user = await currentUser();
-  if (!user) throw new Error("Unauthorized");
+  if (!user) return [];
 
   const dbUser = await db.user.findUnique({ where: { clerkUserId: user.id } });
-  if (!dbUser) throw new Error("User not found");
+  if (!dbUser) return [];
 
   return db.payout.findMany({
     where: { interviewerId: dbUser.id },

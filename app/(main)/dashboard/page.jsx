@@ -19,14 +19,15 @@ export default async function InterviewerDashboardPage() {
   if (!user) redirect("/");
 
   const dbUser = await getCurrentUser();
+  if (!dbUser) redirect("/onboarding");
+  if (dbUser.role === "UNASSIGNED") redirect("/onboarding");
+  if (dbUser.role !== "INTERVIEWER") redirect("/explore");
 
   const [availability, appointments, stats, withdrawalHistory] =
     await Promise.all([
       getAvailability(),
       getInterviewerAppointments(),
       getInterviewerStats(),
-
-      // Assignment
       getWithdrawalHistory(),
     ]);
 
@@ -36,9 +37,9 @@ export default async function InterviewerDashboardPage() {
       <PageHeader
         label="Interviewer dashboard"
         gray="Welcome back,"
-        gold={dbUser.name?.split(" ")[0] ?? "Interviewer"}
+        gold={dbUser?.name?.split(" ")[0] ?? "Interviewer"}
         description={
-          dbUser.title && dbUser.company
+          dbUser?.title && dbUser?.company
             ? `${dbUser.title} · ${dbUser.company}`
             : undefined
         }
