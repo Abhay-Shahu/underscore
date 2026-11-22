@@ -171,9 +171,13 @@ export default function CallUI({
           </div>
 
           {/* Panel content */}
-          <div className="flex-1 min-h-0 overflow-hidden">
-            {activeTab === "chat" ? (
-              chatClient && chatChannel ? (
+          <div className="flex-1 min-h-0 overflow-hidden relative">
+            <div
+              className={`h-full ${
+                activeTab === "chat" ? "flex flex-col" : "hidden"
+              }`}
+            >
+              {chatClient && chatChannel ? (
                 <Chat client={chatClient} theme="str-chat__theme-dark">
                   <Channel channel={chatChannel}>
                     <Window>
@@ -186,9 +190,15 @@ export default function CallUI({
                 <div className="flex items-center justify-center h-full">
                   <Loader2 size={18} className="text-stone-600 animate-spin" />
                 </div>
-              )
-            ) : (
-              <div className="p-4 h-full overflow-y-scroll max-h-screen">
+              )}
+            </div>
+
+            {isInterviewer && (
+              <div
+                className={`p-4 h-full overflow-y-scroll max-h-screen ${
+                  activeTab === "ai" ? "block" : "hidden"
+                }`}
+              >
                 <AIQuestionsPanel categories={booking.categories} />
               </div>
             )}
