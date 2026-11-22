@@ -16,11 +16,11 @@ export async function POST(request) {
     return Response.json({ ok: true });
   }
 
-  // call_cid arrives as "default:mock_123_abc" — we stored just "mock_123_abc"
-  const callCid = body.call_cid ?? "";
-  const streamCallId = callCid.includes(":") ? callCid.split(":")[1] : callCid;
+  // call_cid arrives as "default:mock_123_abc" or call.id as "mock_123_abc"
+  const rawId = body.call_cid ?? body.call?.id ?? "";
+  const streamCallId = rawId.includes(":") ? rawId.split(":")[1] : rawId;
   console.log(
-    `[stream-webhook] call_cid: ${callCid} → streamCallId: ${streamCallId}`
+    `[stream-webhook] rawId: ${rawId} → streamCallId: ${streamCallId}`
   );
 
   if (!streamCallId) {
@@ -56,7 +56,10 @@ export async function POST(request) {
 
     // ── Recording ready ───────────────────────────────────────────────────────
     if (eventType === "call.recording_ready") {
-      const recordingUrl = body.call_recording?.url;
+      const recordingUrl =
+        body.call_recording?.url ??
+        body.call_recording?.filename_url ??
+        body.recording?.url;
 
       if (!recordingUrl) {
         console.log(
